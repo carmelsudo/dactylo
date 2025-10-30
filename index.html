@@ -46,11 +46,13 @@
         }
 
         .placeholder {
-            width: 100%;
+            width: 70%;
             height: 30px;
             display: flex;
             gap: 20px;
             position: relative;
+            border: 1px solid red;
+            margin: auto;
         }
 
         .ph {
@@ -431,20 +433,30 @@
         }
         .warning{
              position:absolute;
-            top:0%;
+            top:-15%;
             border-radius:10px;
             padding: 0 10px;
-            background-color: #ddd;
             display: flex;
             justify-content: space-between;
             align-items: center;
             width: 60%;
             box-shadow: 0px 2px 4px gray;
             display: none;
+            border: 1px solid rgb(255, 117, 5);
+            animation :translate 0.2s ease-in-out forwards 1s
         }
+        @keyframes translate {
+            to{
+                top: 0;
+            }
+        }
+
     @media screen and (max-width : 900px){
         .warning{
             display: flex;
+        }
+        .placeholder{
+            width: 100%;
         }
     }
     </style>
@@ -560,7 +572,6 @@
                         <li>Choisissez le nombre de vagues que vous souhaitez affronter dans le menu déroulant <span
                                 class="color">Vague</span>.</li>
                         <li>Cliquez sur le bouton <span class="color">recommencer</span> pour redémarrer le jeu.</li>
-                        <li>Appuyez sur les touches qui apparaissent à l'écran avant qu'elles ne disparaissent .</li>
                         <li>Utilisez le bouton <span class="color">⏵</span> ou <span class="color">॥</span> ou encore espace pour mettre
                             le jeu en pause ou continuer à tout moment.</li>
                         <li>Essayez d'obtenir le meilleur score possible en terminant toutes les vagues !</li>
