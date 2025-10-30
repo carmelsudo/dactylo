@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clavier AZERTY</title>
+    <style>
+        body,
+        html {
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            background-color: rgb(255, 117, 5);
+        }
+
+        .touche {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .touche:hover {
+            background-color: #f5f5f5;
+        }
+
+        .screen {
+            padding: 10px;
+            width: 96%;
+            height: 70vh;
+            border-radius: 25px;
+            margin: 0;
+            padding-top: 0;
+            overflow: hidden;
+            border: 1px solid rgb(100, 100, 100);
+            background-color: white;
+
+        }
+
+        .placeholder {
+            width: 100%;
+            height: 30px;
+            display: flex;
+            gap: 20px;
+            position: relative;
+        }
+
+        .ph {
+            width: 10%;
+            height: 30px;
+            text-align: center;
+            text-transform: capitalize;
+            font-size: 5.5rem;
+
+        }
+
+        .fkey {
+            background-color: #ddd;
+            padding: 10px 0 20px 0;
+            width: 80%;
+            height: 10px;
+            margin: 0;
+            display: block;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0;
+        }
+
+        .mode1 {
+            position: relative;
+            top: 50%;
+            left: 0%;
+            transform: translate(-50% -50%);
+
+        }
+
+        .scrolling {
+            animation: scroll 4s linear infinite;
+        }
+
+        .fadeout {
+            animation: fadeout 0.2s ease-in forwards;
+        }
+
+        @keyframes fadeout {
+            0% {
+                transform: scale(1.2);
+
+            }
+
+            100% {
+                transform: scale(0);
+            }
+
+        }
+
+        .fadein {
+            animation: fadein 0.2s ease-in forwards;
+        }
+
+        @keyframes fadein {
+            from {
+                transform: scale(0);
+            }
+
+            to {
+                transform: scale(1.2);
+            }
+
+        }
+
+        @keyframes scroll {
+            from {
+                transform: translateY(0vh);
+            }
+
+            to {
+                transform: translateY(72vh);
+            }
+
+        }
+
+        select,
+        #score {
+            font-size: 1rem;
+            padding: 5px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 16px;
+            background-color: #e6e1e1;
+
+        }
+
+        .navbar,
+        footer {
+            background-color: rgb(255, 117, 5);
+            width: 97%;
+            margin: 0;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .level,
+        .score,
+        .wave-container,
+        .wave-container input,
+        .pause-screen {
+            background-color: white;
+            padding: 5px;
+            border-radius: 20px;
+        }
+
+        .score {
+            padding: 10px;
+        }
+
+        .opacityo {
+            opacity: 0;
+        }
+
+        .opacityi {
+            opacity: 1;
+            background-color: rgb(255, 117, 5);
+        }
+
+        .play-pause,
+        .setting span {
+            color: rgb(255, 255, 255);
+            font-size: 2.5rem;
+            font-weight: bolder;
+            cursor: pointer;
+            border: none;
+            background-color: transparent;
+            box-sizing: border-box;
+            max-height: 40px;
+        }
+
+        .wave-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 15%;
+        }
+
+        .wave-container input {
+            width: 40%;
+            background-color: #ddd;
+            border: none;
+        }
+
+        .display {
+            display: none !important;
+        }
+
+        .pause-screen {
+            padding: 20px;
+            background-color: #ddd;
+            animation: pulse 1.2s ease-in-out infinite alternate;
+            font-size: 1.5rem;
+            width: 70%;
+        }
+
+        .pause-screen-container,
+        .decompteur {
+            width: 50%;
+            margin: 20vh auto;
+            text-align: center;
+        }
+
+        .pause-screen-container {
+            width: 100%;
+            height: 75%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 10%;
+            left: 0;
+            backdrop-filter: blur(15px);
+        }
+
+        #restart-button,
+        #start-button {
+            border: none;
+            background-color: rgba(255, 118, 5, 0.925);
+            padding: 10px;
+            border-radius: 10px;
+            width: 50%;
+            cursor: pointer;
+            box-shadow: 0px 2px 4px gray;
+        }
+
+        #restart-button:hover,
+        #start-button:hover {
+            background-color: rgb(255, 117, 5);
+        }
+
+        #restart-button:active,
+        #start-button:active {
+            transform: scale(0.9);
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.7);
+            }
+
+            100% {
+                transform: scale(0.9);
+            }
+        }
+
+        .running-game {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 99vw;
+            overflow: hidden;
+            padding: 0;
+        }
+
+        .start-screen {
+            background-color: #f5f5f5;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+
+        }
+
+        #start-button {
+            font-size: 1.2rem;
+        }
+
+        .decompteur {
+            font-size: 5.2rem;
+            color: rgb(255, 117, 5);
+            animation: pulser 0.5s ease-in-out infinite alternate;
+
+        }
+
+        @keyframes pulser {
+            0% {
+                transform: scale(0.2);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(0.9);
+                opacity: 1;
+            }
+        }
+
+        #modes {
+            background-color: white;
+            padding: 10px;
+            border-radius: 20px;
+        }
+
+        .progress {
+            width: 80%;
+            height: 10px;
+            border-radius: 20px;
+            border: 1px solid rgb(255, 117, 5);
+            display: block;
+            position: absolute;
+            top: -50px;
+        }
+
+        .progress-bar {
+            display: block;
+            background-color: rgb(255, 117, 5);
+            width: 100%;
+            height: 10px;
+            margin: 0;
+            border-radius: 20px;
+            animation: width 4s linear infinite;
+        }
+
+        @keyframes width {
+            from {
+                width: 100%;
+            }
+
+            to {
+                width: 0%;
+                display: none !important;
+            }
+
+        }
+
+        .congrats {
+            margin: 20px auto;
+            width: fit-content;
+            padding: 0 5px;
+            background-color: #fff;
+            border-radius: 30px;
+            text-align: center;
+            font-size: 1.2rem;
+            text-wrap: nowrap;
+            overflow: hidden;
+
+        }
+
+        .congrats-anim {
+            animation: width 0.5s linear forwards;
+        }
+
+        #congratMessage {
+            display: block;
+            padding: 10px;
+        }
+
+        .info {
+            width: 30px;
+            height: 30px;
+            border-radius: 30px;
+            background-color: #fff;
+            line-height: 30px;
+            
+            cursor: pointer;
+            padding: 10px;
+            margin: 0;
+            transition: width 0.3s ease-in-out;
+            text-wrap: nowrap;
+            overflow: hidden;
+        }
+
+        .info span {
+            font-size: 1rem;
+            margin-left: 13px;
+        }
+        .info span:first-child{
+           font-size: 1.5rem;
+           margin-left: -2px;
+        }
+        .info:hover {
+            width: 150px;
+            transition: width 0.3s ease-in-out;
+
+        }
+        .manual {
+            position: absolute;
+            text-wrap: wrap;
+            font-size: 1rem;
+            bottom: 70px;
+            right: 20px;
+            width: 600px;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0px 2px 4px #252525;
+            z-index: 10;
+            cursor: default;
+        }
+
+        .color {
+            color: rgb(255, 117, 5)
+        }
+
+        #close,#clos {
+            float: right;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: black;
+        }
+
+        #close:hover,#clos:hover {
+            color: red;
+            transform: scale(1.2);
+        }
+        .warning{
+             position:absolute;
+            top:0%;
+            border-radius:10px;
+            padding: 0 10px;
+            background-color: #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 60%;
+            box-shadow: 0px 2px 4px gray;
+            display: none;
+        }
+    @media screen and (max-width : 900px){
+        .warning{
+            display: flex;
+        }
+    }
+    </style>
+</head>
+
+<body>
+    <section class="start-screen">
+        <div class="image">
+            <h1>DACTYLO</h1>
+        </div>
+        <div class="description">
+            <p>Tester votre habileté auclavier et pulveriser le meilleur score</p>
+            
+        </div>
+        <button type="button" id="start-button">Commencer</button>
+        <div class="warning">
+           <p>Ce jeu a été concu pour un appareil avec clavier rassurez vous d'en disposer</p>
+            <span id="clos">⤫</span>
+        </div>
+    </section>
+    <section class="running-game display">
+        <nav class="navbar">
+            <span class="level">Niveau:
+                <select name="level" id="level">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                </select>
+            </span>
+            <div class="wave-container">
+                <span>Vague</span>
+                <input type="number" name="waveNumber" id="waveNumber" value="10" class="auto-pause">
+            </div>
+            <button class="play-pause" title="play">
+                ॥
+            </button>
+            <div class="score">
+                <span>Score: </span>
+                <span id="score">0/1</span>
+            </div>
+            <div class="setting">
+                <select name="modes" id="modes">
+                    <option value="mode1">Mode 1</option>
+                    <option value="mode2">Mode 2</option>
+                </select>
+            </div>
+        </nav>
+        <div class="screen">
+            <div class="placeholder">
+                <div class="progress display">
+                    <span class="progress-bar"></span>
+                </div>
+                <div class="ph">
+                    <span class="fkey">A</span>
+                </div>
+                <div class="ph">
+                    <span class="fkey">B</span>
+                </div>
+                <div class="ph">
+                    <span class="fkey">A</span>
+                </div>
+                <div class="ph">
+                    <span class="fkey">A</span>
+                </div>
+                <div class="ph">
+                    <span class="fkey">A</span>
+                </div>
+                <div class="ph">
+                    <span class="fkey">A</span>
+                </div>
+                <div class="ph">
+                    <span class="fkey">A</span>
+                </div>
+                <div class="ph">
+                    <span class="fkey">A</span>
+                </div>
+                <div class="ph">
+                    <span class="fkey">A</span>
+                </div>
+                <div class="ph">
+                    <span class="fkey">A</span>
+                </div>
+            </div>
+            <p class="decompteur">
+            </p>
+            <div class="pause-screen-container display">
+                <p class="pause-screen">Le jeu est en pause</p>
+                <button type="button" id="restart-button">Recommencer</button>
+            </div>
+        </div>
+        <footer>
+            <div class="congrats opacityo">
+                <span id="congratMessage"></span>
+            </div>
+            <div class="info">
+                <span class="question">︖</span> <span>comment jouer </span>
+                <div class="manual display">
+                    <h3 class="color">Comment jouer ?
+                        <span id="close">⤫</span>
+                    </h3>
+                    <p>Le but du jeu est d'appuyer sur les touches qui défilent ou appraissent à l'écran avant qu'elles
+                        n'atteignent le bas ou ne disparaissent. A force vous ameliorerez votre précison et vitesse de frappe</p>
+                    <ul>
+                        <li>Sélectionnez votre niveau de difficulté dans le menu déroulant <span
+                                class="color">Niveau</span>.</li>
+                        <li>Choisissez le nombre de vagues que vous souhaitez affronter dans le menu déroulant <span
+                                class="color">Vague</span>.</li>
+                        <li>Cliquez sur le bouton <span class="color">recommencer</span> pour redémarrer le jeu.</li>
+                        <li>Appuyez sur les touches qui apparaissent à l'écran avant qu'elles ne disparaissent .</li>
+                        <li>Utilisez le bouton <span class="color">⏵</span> ou <span class="color">॥</span> ou encore espace pour mettre
+                            le jeu en pause ou continuer à tout moment.</li>
+                        <li>Essayez d'obtenir le meilleur score possible en terminant toutes les vagues !</li>
+                        <li>Si vous recontrez un problème essayer d'actualiser la page ou <a
+                                href="mailto:chabiaguecarmel@gmail.com" class="color">le signaler via email</a></li>
+                    </ul>
+                    <p>Bonne chance et amusez-vous bien !</p>
+                </div>
+            </div>
+        </footer>
+    </section>
+    <script>
+        const level = document.querySelector("#level");
+        let keyDown;
+        const fk = Array.from(document.querySelectorAll(".fkey"));
+        let score = 0;
+        let checkTab = [];
+        let sfk = []//tableau qui va servir a garder les lettres aléatoires
+        let m = 0;
+        const alpha = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
+        const scoreValue = document.querySelector("#score");
+        const playPauseButton = document.querySelector(".play-pause")
+        const screen = document.querySelector(".screen")
+        let wave = 1;
+        const maxWave = document.querySelector("#waveNumber");
+        const pauseScreen = document.querySelector(".pause-screen-container");
+        const restartButton = document.querySelector("#restart-button");
+        const startButton = document.querySelector("#start-button");
+        const startScreen = document.querySelector(".start-screen");
+        const runningGame = document.querySelector(".running-game");
+        let gameRunning;
+        const autoPause = Array.from(document.querySelectorAll(".auto-pause"));
+        const decompteur = document.querySelector(".decompteur")
+        const mode = document.querySelector("#modes");
+        const placeholder = document.querySelector(".placeholder")
+        const progress = document.querySelector(".progress-bar");
+        let keyHide;
+        let blinkey = [];
+        const messagesFelicitations = [
+            // Niveaux 1-3
+            [
+                "Bien joué !",
+                "Pas mal !",
+                "Tu t'améliores !",
+                "C'est un bon début !"
+            ],
+            // Niveaux 4-6
+            [
+                "Excellent travail !",
+                "Tu es sur la bonne voie !",
+                "Bien joué, continue !",
+                "Tu fais des progrès !"
+            ],
+            // Niveaux 7-9
+            [
+                "Wow, tu es vraiment fort !",
+                "Impressionnant !",
+                "Tu es un as !",
+                "Superbe travail !"
+            ],
+            // Niveau 10
+            [
+                "Légende !",
+                "Tu es un maître !",
+                "Trop fort !",
+                "Félicitations, tu as atteint le sommet !"
+            ]
+        ];
+        const congrats = document.querySelector(".congrats");
+        const closeManual = document.querySelector("#close");
+        const info = document.querySelector(".info");
+        //initialisation
+        //gestion du mode de jeu
+        //function pour cacher les touches après 4 secondes
+
+        document.querySelector(".warning span").addEventListener("click",()=>{
+            document.querySelector(".warning").classList.add("display");
+        });
+        closeManual.addEventListener("click", (event) => {
+            document.querySelector(".manual").classList.add("display");
+            event.stopPropagation();
+        });
+        info.addEventListener("click", (event) => {
+            event.stopPropagation()
+            pause();
+            document.querySelector(".manual").classList.remove("display");
+            counter++;
+        });
+        progress.style.animation = "width 4s linear infinite";
+        function hideKeys() {
+            setInterval(() => {
+
+            }, 4000)
+        }
+        function currentMode(){
+            if (mode.value == "mode1"){
+                wrapper(false);
+                placeholder.classList.add("mode1");
+                progress.parentElement.classList.remove("display");
+            }
+            else if (mode.value == "mode2"){
+                wrapper(true);
+                placeholder.classList.remove("mode1");
+            }
+        }
+        function changeMode(e) {
+            wave = 1;
+            score = 0;
+            clearInterval(runningGame);
+
+        }
+        modes.addEventListener("click", changeMode);
+        modes.addEventListener("mouseover", () => {
+            pause();
+            counter++;
+        });
+
+        let numberOfDecompte = 4;
+
+        function restart() {
+            score = 0;
+            wave = 1;
+            scoreValue.textContent = `${score}/${wave}`;
+            pauseScreen.classList.add("display");
+            //could be set in a function
+            pause();
+            play();
+        }
+        //commencer le jeu
+        startButton.addEventListener("click", () => {
+            startScreen.classList.add("display");
+            runningGame.classList.remove("display");
+            gameRunning = setInterval(() => {
+                currentMode();
+            }, 4000);
+            blinker();
+            const decompte = setInterval(() => {
+                decompteur.textContent = `${--numberOfDecompte}`;
+                if (numberOfDecompte == 0) {
+                    numberOfDecompte = 4;
+                    clearInterval(decompte);
+                    decompteur.classList.add("display");
+                }
+            }, 1000);
+            //cacher les touches après 4 secondes
+
+        });
+        //recommencer le jeu
+        restartButton.addEventListener("click", () => {
+            playPauseButton.addEventListener("mousedown", playPause);//reactiver le button play/pause
+            restart();
+        });
+        function changeAlpha(option = false) { //si true retourne seulement une lettre aléatoire, si false change le contenue de toute les lettres scrollante toute les 4s
+            if (option) {
+                return `${alpha[Math.floor(Math.random() * 26)]}`;
+            }
+            else {
+                fk.forEach((f) => {
+                    let n = Math.floor(Math.random() * 26)
+                    f.textContent = `${alpha[n]}`;
+                });
+            }
+        }
+        //fonction pour créer le tableau sfk qui contient les touches que l'utilisateur doit appuyer
+        function targetKey() {
+            sfk.forEach((s)=>{
+                // s.classList.remove("fadeout","opacityo");
+                s.classList.remove("opacityi")
+            })
+            sfk = []; //le tableau se vide
+            for (i = 0; i < (level.value); i++) {
+                let randomIndex = Math.floor(Math.random() * (level.value))
+                while (sfk.includes(fk[randomIndex])) {
+                    randomIndex = Math.floor(Math.random() * (level.value))
+                }
+                sfk.push(fk[randomIndex]);
+                sfk.forEach((s) => {
+                    s.classList.remove("fadeout")
+                    s.classList.add("opacityi");
+                });
+            }
+        }
+        function blinker(){
+            console.log("function blinker")
+            blinkey[0] =  setInterval(()=>{
+                sfk.forEach((s)=>{
+                    if(s !== undefined){
+                        s.classList.remove("fadein");
+                        s.classList.add("fadeout");
+                    }
+                });
+                // clearInterval(blinkey[0]);
+                console.log("blinkey1",blinkey[0])
+                blinkey[1] = setTimeout(()=>{
+                    sfk.forEach((s)=>{
+                        if(s !== undefined){
+                            s.classList.remove("fadeout");
+                            s.classList.add("fadein")
+                        }
+                    });
+
+                    // clearTimeout(blinkey[1])
+                     console.log("blinkey")
+                },200)
+            },4000);
+        }
+       
+        //fonction pour faire scroller les éléments du tableau sfk
+        function randomScroll() {
+            targetKey();
+            blinkey.forEach((b)=>{
+                if (b !== false) { 
+                    clearInterval(b);
+                    clearTimeout(b);
+                 }
+            });
+            fk.forEach((s) => {
+                s.classList.remove("fadein", "fadeout");
+                s.classList.add("scrolling");
+            });
+        }
+        //fonction pour faire apparaitre les éléments pour le mode 1
+        function fadein(){
+            console.log("fade in")
+                checkTab = [];
+                sfk.forEach((s)=>{
+                if(s !== undefined){
+                s.classList.remove("opacityi","fadeout")
+                 }
+            });
+            targetKey(false);
+             sfk.forEach((s)=>{
+                if(s !== undefined){
+                    s.classList.add("fadein");
+                }
+            });
+            progress.style.animation = "width 4s linear infinite";
+            //
+            
+        }
+        
+        
+        //retirer la classe scroll après avoir scroller
+ 
+       
+        function checkGameover() {
+            //incréméenter et afficher le nombre de vague passé
+            wave++;
+            scoreValue.textContent = `${score}/${wave}`;
+            if (wave >= maxWave) {
+            }
+        }
+        //rassablement des fonctions en une fonction unique afin de faciliter play/pause
+        let resetScrollingElementInterval, randomScrollInterval, changeAlphaInterval;
+        function wrapper(option = true) {
+
+            if (option) {//mode2
+                clearInterval(blinkey[0]);
+                clearTimeout(blinkey[1]);
+                randomScroll();
+            }
+            else {//mode1
+                fadein();
+                 
+               
+            }
+            changeAlpha();
+            checkWave();
+        }
+
+        //play et pause
+
+        //play
+        function play() {
+            playPauseButton.attributes[1].textContent = "pause"
+            playPauseButton.textContent = "॥";
+            gameRunning = setInterval(() => {
+                currentMode();
+            }, 4000);
+            blinker();
+            pauseScreen.classList.add("display");
+            const decompte = setInterval(() => {
+                decompteur.classList.remove("display");
+                progress.parentElement.classList.add("display");
+                decompteur.textContent = `${--numberOfDecompte}`;
+                if (numberOfDecompte == 0) {
+                    numberOfDecompte = 4;
+                    clearInterval(decompte);
+                    decompteur.classList.add("display");
+                    progress.parentElement.classList.remove("display");
+                }
+            }, 1000);
+        }
+        //pause
+        function pause(){
+            pauseScreen.classList.remove("display");
+            clearInterval(gameRunning);
+            if(mode.value == "mode1"){
+                console.log("tried to clean blinkey interval",blinkey[0])
+                clearInterval(blinkey[0]);
+               clearTimeout(blinkey[1]);
+                clearInterval(blinkey[0]);
+               clearTimeout(blinkey[1]);
+            }
+            playPauseButton.textContent = "⏵";
+            playPauseButton.attributes[1].textContent = "play"//attribut title en html
+            fk.forEach(f => {
+                f.classList.remove("scrolling", "opacityi");
+                progress.style.animation = "none";
+                 blinkey.forEach((b)=>{
+                    if (b !== false) { clearInterval(blinkey); }
+                 });
+
+            });
+            pauseScreen.firstElementChild.textContent = "le jeu est en pause";
+        }
+        let counter = 0; //compte le nombre de fois que le button play et pause a été cliqué
+        function playPause() {
+            counter++;
+            if (counter % 2 !== 0) {//pause
+                pause();
+            }
+            else {//play
+                play();
+            }
+        }
+        playPauseButton.addEventListener("mousedown", playPause);
+        autoPause.forEach((auto) => {
+            auto.addEventListener("click", (auto) => {
+                pause();
+                counter++;
+            });
+        });
+        //message de félicitation a l'utilisateur
+
+        function afficherMessageFelicitation(niveau) {
+            let indexTableau;
+            if (niveau <= 3) {
+                indexTableau = 0;
+            } else if (niveau <= 6) {
+                indexTableau = 1;
+            } else if (niveau <= 9) {
+                indexTableau = 2;
+            } else {
+                indexTableau = 3;
+            }
+            const messages = messagesFelicitations[indexTableau];
+            const message = messages[Math.floor(Math.random() * messages.length)];
+            return message;
+        }
+        //fonction actualisation du score
+
+        const keyEvent = document.addEventListener("keydown", (event) => {
+            checkTarget(event);
+            console.log(event.code)
+            if(event.code=='Space'){
+                playPause();
+                
+            }
+        });
+        function congratulator() {//afficher et cacher le message de félicitation a l'utilisateur en cas de victoire
+            congrats.classList.remove("opacityo");
+            const messageHider = setTimeout(() => {
+                congrats.firstElementChild.classList.add("congrats-anim");
+                congrats.classList.add("opacityo");
+            }, 2000);
+            const removeMessageHider = setTimeout(() => {
+                congrats.firstElementChild.classList.remove("congrats-anim");
+
+            }, 200);
+        }
+        function checkTarget(target, option = true) {//verifie si la touche pressé correspond a une touche scrollante et arrete le jeu en cas de fin
+            sfk.forEach((s) => {
+                if (target.key.toLowerCase() === s.textContent) {//mode2
+                    if (option) {
+                        s.classList.remove("scrolling", "opacityi");
+                    }
+                    if (!option) {//mode1
+                        s.classList.remove("fadein");
+                        s.classList.add("fadeout");
+                    }
+                    checkTab.push(true);
+                    s.textContent = changeAlpha(true);//retourne seulement une lettre pour eviter de gagner des points en spamant la touches
+                }
+                if (checkTab.length >= level.value) {
+                    if (checkTab.every(c => c == true)) {
+                        scoreValue.textContent = `${++score}/${wave}`;
+                        congrats.firstElementChild.textContent = `${afficherMessageFelicitation(checkTab.length)}`;
+                        congratulator();
+                    }
+                    checkTab = [];
+                }
+            });
+        }
+        setInterval(()=>{//vide le tableau check tab pour eviter le spam de touche
+             checkTab = [];
+        },4000)
+        //réinitialisation du score et le nombre de vague passé si niveau est changé
+        let currentLevel = 1;
+        level.addEventListener("click", (event) => {
+            if (currentLevel != event.target.value) {
+                score = 0;
+                wave = 1;
+                scoreValue.textContent = `${score}/${wave}`;
+            }
+            currentLevel = event.target.value;
+        });
+        //gestion de nombre de vague et fin du jeu
+        function checkWave() {
+            scoreValue.textContent = `${score}/${wave}`;
+            wave++
+            if (wave > maxWave.value) {
+                pause();
+                pauseScreen.firstElementChild.textContent = "GAME OVER";
+                scoreValue.textContent = `${score}/${wave - 1}`;
+                wave = 0;
+                progress.style.animation = "none";
+                playPauseButton.removeEventListener("mousedown", playPause);
+            }
+        }
+    </script>
+</body>
+
+</html>
